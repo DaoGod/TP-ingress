@@ -5,6 +5,35 @@
 - [@Enzo Pistre](https://github.com/DaoGod)
 - [@Nicolas Seillé](https://github.com/Nicolas-3050)
 
+
+## 1. Installer Kind et créer votre premier cluster. Suivre cette documentation : https://kind.sigs.k8s.io/docs/user/quick-start/
+
+L'installation de Kind :
+
+```bash
+choco install kind
+```
+
+Création du cluster
+
+```bash
+Kind create cluster
+```
+
+## 2. Installer le Nginx ingress Controller. Suivre cette documentation : https://kind.sigs.k8s.io/docs/user/ingress/#ingress-nginx
+
+Installation de Nginx ingress Controller
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+```
+
+## 3. Compléter le schéma suivant avec des objets Kubernetes
+
+Voici le schéma compléter:
+
+![docker images](images\Tp_ingress.png)
+
 ## 4. Builder et publier (à partir de l’image nginx) sur le DockerHub, une image docker pour chacun des sites web présent sur le schéma précédent
 
 On fait trois Dockerfile pour chacune des images que l'on veut créer ainsi que trois fichiers index.html :
