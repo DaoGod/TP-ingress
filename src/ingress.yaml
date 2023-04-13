@@ -1,0 +1,38 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: eatsout-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - host: mypizza.eatsout.com
+    http:
+      paths:
+      - path: /mypizza
+        pathType: Prefix
+        backend:
+          service:
+            name: mypizza-service
+            port:
+              number: 80
+  - host: tacos.eatsout.com
+    http:
+      paths:
+      - path: /tacos
+        pathType: Prefix
+        backend:
+          service:
+            name: tacos-service
+            port:
+              number: 80
+  - host: burger.eatsout.com
+    http:
+      paths:
+      - path: /burger
+        pathType: Prefix
+        backend:
+          service:
+            name: burger-service
+            port:
+              number: 80
