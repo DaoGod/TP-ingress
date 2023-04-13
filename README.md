@@ -10,7 +10,7 @@
 On fait trois Dockerfile pour chacune des images que l'on veut créer ainsi que trois fichiers index.html :
 
 ```yaml
-# burgeandacos/Dockerfile
+# burgerandtacos/Dockerfile
 FROM nginx
 
 COPY index.html /usr/local/apache2/htdocs/
