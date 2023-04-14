@@ -1,4 +1,7 @@
 # tacos/Dockerfile
 FROM nginx
 
-COPY index.html /usr/local/apache2/htdocs/
+COPY default.conf /etc/nginx/conf.d/
+COPY html /usr/share/nginx/html/tacos/
+
+CMD ["nginx", "-g", "daemon off;"]
