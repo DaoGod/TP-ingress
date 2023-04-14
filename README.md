@@ -323,12 +323,18 @@ tacos-deployment-68957776f9-mkwm6     1/1     Running   0          2m16s
 tacos-deployment-68957776f9-wgf4k     1/1     Running   0          2m16s
 ```
 
-On peut utiliser la commande kubectl logs <nom du pod> pour voir le nombre de requêtes traitée par le pod. Si la charge est équitablement répartie entre les pods, le nombre de requêtes traitées par pods devrait être à peu près égale. 
+On peut utiliser la commande kubectl logs <nom du pod> pour voir le nombre de requêtes traitée par le pod. 
 
 Exemple : 
 ```bash
 kubectl logs tacos-deployment-68957776f9-k5vnw
 ```
+
+```bash
+kubectl logs tacos-deployment-68957776f9-wgf4k
+```
+
+Si la charge est équitablement répartie entre les pods, le nombre de requêtes traitées par pods devrait être à peu près égale (visibles sur les logs). 
 
 Si les requêtes http n'apparaissent pas dans les logs des pods, on peut configurer le serveur Nginx pour enregistrer les requêtes en rajoutant la ligne 
 access_log /var/log/nginx/access.log; dans les fichiers default.conf.
