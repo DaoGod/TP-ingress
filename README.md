@@ -305,3 +305,30 @@ Pour que cela fonctionne, on peut aussi définir les routes dans le fichier Wind
 127.0.0.1 tacos.eatsout.com
 
 ## 6. Il va vous falloir gérer une charge importante sur le Service de commande des tacos (3 fois plus de commandes). Comment gérer cela ? Comment vérifier que les requêtes sont bien réparties (avec quelle commande kubectl ?) ?
+
+Pour gérer cette charge de commande plus importante dans notre service Tacos, nous pouvons augmenter le nombre de replica de pods dans le deploiement. Cela permettre de répartir la charge entre plusieurs instance du service tacos. D'après le schéma définis lors de la question 3, le replica était à 3, nous pouvons l'augmenter à 9. 
+
+La commande kubectl get pods, permet de vérifier que le nombre de pods voulu a bien été créé :
+
+```bash
+PS D:\Documents\Docker_Ynov_2023\TP-ingress\src> kubectl get pods -l app=tacos
+NAME                                  READY   STATUS    RESTARTS   AGE
+tacos-deployment-68957776f9-5jmqv     1/1     Running   0          2m16s
+tacos-deployment-68957776f9-bszv8     1/1     Running   0          2m16s
+tacos-deployment-68957776f9-k5vnw     1/1     Running   0          2m16s
+tacos-deployment-68957776f9-ks5w4     1/1     Running   0          2m16s
+tacos-deployment-68957776f9-ktdgg     1/1     Running   0          2m16s
+tacos-deployment-68957776f9-lpx8b     1/1     Running   0          2m16s
+tacos-deployment-68957776f9-mkwm6     1/1     Running   0          2m16s
+tacos-deployment-68957776f9-wgf4k     1/1     Running   0          2m16s
+```
+
+On peut utiliser la commande kubectl logs <nom du pod> pour voir le nombre de requêtes traitée par le pod. Si la charge est équitablement répartie entre les pods, le nombre de requêtes traitées par pods devrait être à peu près égale. 
+
+Exemple : 
+```bash
+kubectl logs tacos-deployment-68957776f9-k5vnw
+```
+
+Si les requêtes http n'apparaissent pas dans les logs des pods, on peut configurer le serveur Nginx pour enregistrer les requêtes en rajoutant la ligne 
+access_log /var/log/nginx/access.log; dans les fichiers default.conf.
