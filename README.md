@@ -109,7 +109,7 @@ J'ai exécuté cette commande avec mes trois images.
 
 ## 5. Ecrire les fichiers yaml vous permettant de déployer sur votre cluster kind installé en local les composants décrits sur le schéma de la question 3 et les images crées à la question 4
 
-J'ai créé quatres fichiers yaml.
+J'ai créé quatres fichiers yaml. Il y en a un pour chaque services et un pour ingress.
 
 burger.yaml :
 ```yaml
@@ -132,7 +132,7 @@ kind: Deployment
 metadata:
   name: burger-deployment
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: burger
@@ -147,8 +147,17 @@ spec:
           ports:
             - containerPort: 80
 ```
+On spécifie dans kind que l'on veut créée un service avec le nom burger-service 
+Les pods sélectionnés dans le service sont ceux avec le label app=burger
+Le service est accessible sur le port 80 et il dirige vers les pods avec le label indiqué.
 
-Le contenu des fichiers mypizza.yaml et tacos.yaml est très similaire.
+On veut aussi créer un deployment (indiqué dans kind) avec le nom burger-deployment
+Comme indiqué dans le schéma, le replicaset est à 1 pour mypizza et burger, et à 3 pour tacos.
+Il y aura donc ici 1 pod avec le label burger de créée au moment du deploiement
+
+On indique que le conteneur du pod utilise l'image nicolassss/burger.eatsout.com, créée précédement. Il est exposé sur le port 80.
+
+Le contenu des fichiers mypizza.yaml et tacos.yaml est très similaire. Les changements sont le nom des services, des pods, des déploiements et le replica qui est à 3 pour tacos.
 
 J'ai ensuite créé un fichier ingress.yaml :
 
@@ -193,6 +202,13 @@ spec:
               number: 80
 ```
 
+Le fichier Ingress.yaml permet de faire fonctionner et de définir les ressource du cluster Kubernetes.
+Il permet d'exposer nos services définis précédement à l'extérieur du cluster.
+
+Les requêtes de mypizza.eatsout.com/mypizza, tacos.eatsout.com/tacos et burger.eatsout.com/burger sont dirigées vers les services mypizza-service, tacos-service et burger-service sur le port 80. Le path correspond au chemin d'accès de la requête dans l'URL.
+
+Ici, si une requête arrive avec un chemin d'accès commençant par /burger, elle doit être routée vers le service burger-service sur le port 80.
+
 On doit ensuite déployer nos différents services : 
 
 ```bash
@@ -218,7 +234,7 @@ PS D:\Documents\Docker_Ynov_2023\TP-ingress\src> kubectl apply -f ingress.yaml
 ingress.networking.k8s.io/eatsout-ingress created
 ```
 
-On peut vérifier que les pods, les deployments et les services ont bien été créé avec ces commandes :
+On peut vérifier que les pods, les deployments et les services ont bien été créée avec ces commandes :
 
 ```bash
 PS D:\Documents\Docker_Ynov_2023\TP-ingress\src> kubectl get service
@@ -241,22 +257,51 @@ tacos-deployment     3/3     3            3           6m7s
 PS D:\Documents\Docker_Ynov_2023\TP-ingress\src> kubectl get pod        
 NAME                                  READY   STATUS    RESTARTS   AGE
 burger-deployment-6fd5dcc984-fltl6    1/1     Running   0          5m40s
-burger-deployment-6fd5dcc984-gjhd5    1/1     Running   0          5m40s
-burger-deployment-6fd5dcc984-pcsd8    1/1     Running   0          5m40s
 mypizza-deployment-86dff76457-7bvct   1/1     Running   0          4m36s
-mypizza-deployment-86dff76457-jwsjp   1/1     Running   0          4m36s
-mypizza-deployment-86dff76457-qlw2s   1/1     Running   0          4m36s
 tacos-deployment-68957776f9-6l8vk     1/1     Running   0          6m19s
 tacos-deployment-68957776f9-h7j4v     1/1     Running   0          6m19s
 tacos-deployment-68957776f9-qgwjj     1/1     Running   0          6m19s
 ```
 
-On peut faire cette commande pour exposer temporairement le service mypizza-service sur notre machine au port 8080:80 :
+J'ai aussi créé des fichiers default.conf pour permettre au serveur de traiter les requêtes pour /mypizza, /tacos, /burger (chaque service).
+Le serveur doit écouter sur le port 80.
+
+```bash
+server {
+    listen       80;
+    server_name  localhost;
+
+    location /mypizza {
+        alias   /usr/share/nginx/html/mypizza/;
+        index  index.html;
+        try_files $uri $uri/ /index.html;
+    }
+
+    location /tacos {
+        alias   /usr/share/nginx/html/tacos/;
+        index  index.html;
+        try_files $uri $uri/ /index.html;
+    }
+
+    location /burger {
+        alias   /usr/share/nginx/html/burger/;
+        index  index.html;
+        try_files $uri $uri/ /index.html;
+    }
+}
+```
+
+Le fichier default.conf est copié dans le Dockerfile.
+J'ai aussi modifié le dossier où est copié index.html (/usr/local/apache2/htdocs/), car Nginx s'attend à ce qu'il soit dans /usr/share/nginx/html/
+
+On peut maintenant faire cette commande pour exposer temporairement le service mypizza-service sur notre machine au port 8080:80 :
 kubectl port-forward svc/mypizza-service 8080:80
 
 On peut y accéder maintenant depuis : http://localhost:8080/mypizza
 
-Pour que cela fonctionne, il faut aussi penser à définir les routes dans le fichier Windows/System32/drivers/etc/hosts :
+Pour que cela fonctionne, on peut aussi définir les routes dans le fichier Windows/System32/drivers/etc/hosts :
 127.0.0.1 mypizza.eatsout.com
-127.0.0.1 burgerandtacos.eatsout.com
-127.0.0.1 burgerandtacos.eatsout.tacos
+127.0.0.1 burger.eatsout.com
+127.0.0.1 tacos.eatsout.com
+
+## 6. Il va vous falloir gérer une charge importante sur le Service de commande des tacos (3 fois plus de commandes). Comment gérer cela ? Comment vérifier que les requêtes sont bien réparties (avec quelle commande kubectl ?) ?
