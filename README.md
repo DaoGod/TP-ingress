@@ -36,7 +36,7 @@ Voici le schéma compléter:
 
 ## 4. Builder et publier (à partir de l’image nginx) sur le DockerHub, une image docker pour chacun des sites web présent sur le schéma précédent
 
-On fait trois Dockerfile pour chacune des images que l'on veut créer ainsi que trois fichiers index.html :
+On fait trois Dockerfiles pour chacune des images que l'on veut créer ainsi que trois fichiers index.html :
 
 ```yaml
 # burger/Dockerfile
@@ -77,7 +77,7 @@ nicolassss/tacos.eatsout.com                          latest    109a57897283   1
 nicolassss/burger.eatsout.com                         latest    8d481f4c8c22   14 minutes ago   142MB 
 ```
 
-J'ai renseigné mon nom d'utilisateur DockerHub dans le nom de mon image afin que celle-ci puisse être publié sur DockerHub. Ici c'est nicolassss.
+J'ai renseigné mon nom d'utilisateur DockerHub dans le nom de mon image afin que celle-ci puisse être publiée sur DockerHub. Ici c'est nicolassss.
 
 Je me connecte ensuite à mon compte DockerHub :
 
@@ -109,7 +109,7 @@ J'ai exécuté cette commande avec mes trois images.
 
 ## 5. Ecrire les fichiers yaml vous permettant de déployer sur votre cluster kind installé en local les composants décrits sur le schéma de la question 3 et les images crées à la question 4
 
-J'ai créé quatres fichiers yaml. Il y en a un pour chaque services et un pour ingress.
+J'ai créé quatres fichiers yaml. Il y en a un pour chaque service et un pour ingress.
 
 burger.yaml :
 ```yaml
@@ -202,7 +202,7 @@ spec:
               number: 80
 ```
 
-Le fichier Ingress.yaml permet de faire fonctionner et de définir les ressource du cluster Kubernetes.
+Le fichier Ingress.yaml permet de faire fonctionner et de définir les ressources du cluster Kubernetes.
 Il permet d'exposer nos services définis précédement à l'extérieur du cluster.
 
 Les requêtes de mypizza.eatsout.com/mypizza, tacos.eatsout.com/tacos et burger.eatsout.com/burger sont dirigées vers les services mypizza-service, tacos-service et burger-service sur le port 80. Le path correspond au chemin d'accès de la requête dans l'URL.
@@ -306,7 +306,7 @@ Pour que cela fonctionne, on peut aussi définir les routes dans le fichier Wind
 
 ## 6. Il va vous falloir gérer une charge importante sur le Service de commande des tacos (3 fois plus de commandes). Comment gérer cela ? Comment vérifier que les requêtes sont bien réparties (avec quelle commande kubectl ?) ?
 
-Pour gérer cette charge de commande plus importante dans notre service Tacos, nous pouvons augmenter le nombre de replica de pods dans le deploiement. Cela permettre de répartir la charge entre plusieurs instance du service tacos. D'après le schéma définis lors de la question 3, le replica était à 3, nous pouvons l'augmenter à 9. 
+Pour gérer cette charge de commandes plus importante dans notre service Tacos, nous pouvons augmenter le nombre de replica de pods dans le deploiement. Cela permettra de répartir la charge entre plusieurs instances du service tacos. D'après le schéma définis lors de la question 3, le replica était à 3, nous pouvons l'augmenter à 9. 
 
 La commande kubectl get pods, permet de vérifier que le nombre de pods voulu a bien été créé :
 
@@ -323,7 +323,7 @@ tacos-deployment-68957776f9-mkwm6     1/1     Running   0          2m16s
 tacos-deployment-68957776f9-wgf4k     1/1     Running   0          2m16s
 ```
 
-On peut utiliser la commande kubectl logs <nom du pod> pour voir le nombre de requêtes traitée par le pod. 
+On peut utiliser la commande kubectl logs <nom du pod> pour voir le nombre de requêtes traitées par le pod. 
 
 Exemple : 
 ```bash
@@ -334,7 +334,7 @@ kubectl logs tacos-deployment-68957776f9-k5vnw
 kubectl logs tacos-deployment-68957776f9-wgf4k
 ```
 
-Si la charge est équitablement répartie entre les pods, le nombre de requêtes traitées par pods devrait être à peu près égale (visibles sur les logs). 
+Si la charge est équitablement répartie entre les pods, le nombre de requêtes traitées par pods devrait être à peu près égale (visible sur les logs). 
 
 Si les requêtes http n'apparaissent pas dans les logs des pods, on peut configurer le serveur Nginx pour enregistrer les requêtes en rajoutant la ligne 
 access_log /var/log/nginx/access.log; dans les fichiers default.conf.
